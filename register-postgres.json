@@ -1,0 +1,16 @@
+{
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "tasks.max": "1",
+    "database.hostname": "weather-db",
+    "database.port": "5432",
+    "database.user": "postgresuser",
+    "database.password": "postgrespw",
+    "database.dbname" : "weatherdb",
+    "database.server.name": "dbserver1",
+    "schema.whitelist": "weather",
+    "decimal.handling.mode" : "double",
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false"
+}

@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <title>Temperature Sensors</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Temperature Sensors</h1>
+    
+      <div style="text-align: center;">
+        <div id="map_measurements" style="border:0px dotted blue; width: 90%; height: 675px;margin: auto; position:relative;"></div>
+      </div>
+      <div style="width: 90%;">
+        <div id="status">Status:</div>
+        <div id="last_message">Last Event: -</div>
+      </div>
+
+    </div>
+
+    <script src="js/d3.min.js"></script>
+    <script src="js/topojson.min.js"></script>
+    <script src="js/datamaps.world.hires.min.js"></script>
+
+    <script>
+      var measurementsMap = new Datamap({
+        element: document.getElementById('map_measurements'),
+        scope: 'world',
+        projection: 'mercator', // big world map
+        geographyConfig: {
+          popupOnHover: false,
+          highlightOnHover: false
+        },
+        fills: {
+          '-5' : '#0e359e',
+          '-4' : '#435eb0',
+          '-3' : '#6588c1',
+          '-2' : '#88b2d3',
+          '-1' : '#b1dde6',
+          '0' : '#ffffff',
+          '1' : '#ffcab9',
+          '2' : '#fd9291',
+          '3' : '#e75d6f',
+          '4' : '#c52a52',
+          '5' : '#93003a',
+          defaultFill: '#d5e3b8'
+        },
+        data: {}
+      });
+
+      var measurements = new Map();
+
+      var ws = new WebSocket("ws://" + window.location.host + "/map/ws");
+
+        ws.onopen = function() {
+            var status = document.getElementById("status");
+            status.innerHTML = "Status: Web Socket is connected!";
+        };
+
+        ws.onmessage = function (evt) {
+            var msg = evt.data;
+            var last_message = document.getElementById("last_message");
+            last_message.innerHTML = "Last message: " + msg;
+            var record = JSON.parse(msg);
+
+            var fillKey = '1';
+            if (record.value < -40) {
+                fillKey = '-5';
+            }
+            else if (record.value < -30) {
+                fillKey = '-4';
+            }
+            else if (record.value < -20) {
+                fillKey = '-3';
+            }
+            else if (record.value < -10) {
+                fillKey = '-2';
+            }
+            else if (record.value < 0) {
+                fillKey = '-1';
+            }
+            else if (record.value < 10) {
+                fillKey = '0';
+            }
+            else if (record.value < 20) {
+                fillKey = '1';
+            }
+            else if (record.value < 30) {
+                fillKey = '2';
+            }
+            else if (record.value < 40) {
+                fillKey = '3';
+            }
+            else if (record.value < 50) {
+                fillKey = '4';
+            }
+            else {
+                fillKey = '5';
+            }
+
+            measurements.set(
+              record.stationId, 
+              {
+                latitude: record.latitude,
+                longitude: record.longitude,
+                radius: 25,
+                fillKey: fillKey,
+                name: record.stationName,
+                icon: record.icon,
+                ts: record.ts,
+                current: record.value,
+                min: record.min,
+                max: record.max,
+                average: record.average
+              }
+            );
+
+            measurementsMap.bubbles(Array.from(measurements.values()), {
+              popupTemplate: function (geo, data) {
+                      return ['<div class="hoverinfo"><b>' +  data.name + '</b> ' + data.icon,
+                      '<br/><b>ts:</b> ' +  data.ts,
+                      '<br/><b>current:</b> ' +  data.current + '',
+                      '<br/><b>min:</b> ' +  data.min + '',
+                      '<br/><b>max:</b> ' +  data.max + '',
+                      '<br/><b>average:</b> ' +  data.averge + '',
+                      '</div>'].join('');
+              }
+            });
+
+        };
+
+        ws.onclose = function() { 
+            var status = document.getElementById("status");
+            status.innerHTML = "Status: connection is closed.";
+        };
+    </script>
+</body>
+</html>
