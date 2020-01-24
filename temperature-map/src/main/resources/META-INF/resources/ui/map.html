@@ -13,7 +13,7 @@
   <body>
     <div class="container">
       <h1>Temperature Sensors</h1>
-    
+
       <div style="text-align: left;">
         <div id="map_measurements" style="border:0px dotted blue; width: 75%; height: 475px;margin: auto; position:relative;"></div>
       </div>
@@ -124,16 +124,30 @@
 
             measurementsMap.bubbles(Array.from(measurements.values()), {
               popupTemplate: function (geo, data) {
-                      return ['<div class="hoverinfo"><b>' +  data.name + '</b> ' + data.icon,
-                      '<br/><b>ts:</b> ' +  data.ts,
-                      '<br/><b>current:</b> ' +  data.current + '',
-                      '<br/><b>min:</b> ' +  data.min + '',
-                      '<br/><b>max:</b> ' +  data.max + '',
-                      '<br/><b>average:</b> ' +  data.average + '',
-                      '</div>'].join('');
+                      return [
+                        '<div class="hoverinfo">',
+                        '  <div style="text-align: center;">',
+                        '    <b style="font-size:150%">' + data.name + '</b><br/>',
+                        '    <i>&nbsp;&nbsp;&nbsp;' + data.ts + '&nbsp;&nbsp;&nbsp;</i><br/>' + data.icon,
+                        '    <table style="width:100%">',
+                        '      <tr>',
+                        '        <td style="text-align: right; width:50%"><b>current:</b></td><td style="text-align: left">' + (data.current > 0 ? '&nbsp;' : '') + data.current + '</td>',
+                        '      </tr>',
+                        '      <tr>',
+                        '        <td style="text-align: right; width:50%"><b>min:</b></td><td style="text-align: left">' + (data.min > 0 ? '&nbsp;' : '') + data.min + '</td>',
+                        '      </tr>',
+                        '      <tr>',
+                        '        <td style="text-align: right; width:50%"><b>max:</b></td><td style="text-align: left">' + (data.max > 0 ? '&nbsp;' : '') + data.max + '</td>',
+                        '      </tr>',
+                        '      <tr>',
+                        '        <td style="text-align: right; width:50%"><b>average:</b></td><td style="text-align: left">' + (data.average > 0 ? '&nbsp;' : '') + data.average + '</td>',
+                        '      </tr>',
+                        '    </table>',
+                        '  </div>',
+                        '</div>'
+                      ].join('');
               }
             });
-
         };
 
         ws.onclose = function() { 

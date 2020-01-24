@@ -22,7 +22,6 @@ import io.smallrye.reactive.messaging.kafka.KafkaMessage;
 /**
  * A bean producing random temperature data every second.
  * The values are written to a Kafka topic (temperature-values).
- * Another topic contains the name of weather stations (weather-stations).
  * The Kafka configuration is specified in the application configuration.
  */
 @ApplicationScoped
@@ -40,7 +39,7 @@ public class ValuesGenerator {
                 .onBackpressureDrop()
                 .filter(l -> !stations.isEmpty())
                 .map(tick -> {
-                    int stationId = random.nextInt(stations.size() - 1) + 1;
+                    int stationId = random.nextInt(stations.size()) + 1;
                     WeatherStation station = stations.get(stationId);
 
                     double temperature = new BigDecimal(random.nextGaussian() * 15 + station.averageTemperature)

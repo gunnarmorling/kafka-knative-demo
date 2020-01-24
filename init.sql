@@ -20,3 +20,7 @@ INSERT INTO weatherstations (name, average_temperature, longitude, latitude) VAL
 INSERT INTO weatherstations (name, average_temperature, longitude, latitude) VALUES('Oslo', 7, 10.8, 59.9);
 INSERT INTO weatherstations (name, average_temperature, longitude, latitude) VALUES('Marrakesh', 20, -8.0, 31.6);
 INSERT INTO weatherstations (name, average_temperature, longitude, latitude) VALUES('Johannesburg', 25, 28.0, -26.2);
+INSERT INTO weatherstations (name, average_temperature, longitude, latitude) VALUES('Anchorage', -2, -149.9, 61.2);
+INSERT INTO weatherstations (name, average_temperature, longitude, latitude) VALUES('San Francisco', 15, -122.4, 37.8);
+INSERT INTO weatherstations (name, average_temperature, longitude, latitude) VALUES('Canberra', 25, 149.1, -35.3);
+INSERT INTO weatherstations (name, average_temperature, longitude, latitude) VALUES('Novosibirsk', 10, 82.9, 55.0);
