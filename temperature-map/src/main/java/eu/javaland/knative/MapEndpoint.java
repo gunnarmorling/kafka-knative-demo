@@ -10,9 +10,8 @@ import javax.json.bind.Jsonb;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnOpen;
-import javax.websocket.server.ServerEndpoint;
-
 import javax.websocket.Session;
+import javax.websocket.server.ServerEndpoint;
 
 @ServerEndpoint("/map/ws")
 @ApplicationScoped
@@ -40,6 +39,7 @@ public class MapEndpoint {
     }
 
     public void onMeasurement(Measurement measurement) {
+        System.out.println("Received: " + measurement);
         String json = jsonb.toJson(measurement);
         broadcast(json);
     }

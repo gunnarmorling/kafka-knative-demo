@@ -14,8 +14,8 @@
     <div class="container">
       <h1>Temperature Sensors</h1>
     
-      <div style="text-align: center;">
-        <div id="map_measurements" style="border:0px dotted blue; width: 90%; height: 675px;margin: auto; position:relative;"></div>
+      <div style="text-align: left;">
+        <div id="map_measurements" style="border:0px dotted blue; width: 75%; height: 475px;margin: auto; position:relative;"></div>
       </div>
       <div style="width: 90%;">
         <div id="status">Status:</div>
@@ -66,8 +66,9 @@
         ws.onmessage = function (evt) {
             var msg = evt.data;
             var last_message = document.getElementById("last_message");
-            last_message.innerHTML = "Last message: " + msg;
+
             var record = JSON.parse(msg);
+            last_message.innerHTML = "Last message: " + record.stationName + ": " + record.value + " " + record.icon;
 
             var fillKey = '1';
             if (record.value < -40) {
@@ -128,7 +129,7 @@
                       '<br/><b>current:</b> ' +  data.current + '',
                       '<br/><b>min:</b> ' +  data.min + '',
                       '<br/><b>max:</b> ' +  data.max + '',
-                      '<br/><b>average:</b> ' +  data.averge + '',
+                      '<br/><b>average:</b> ' +  data.average + '',
                       '</div>'].join('');
               }
             });

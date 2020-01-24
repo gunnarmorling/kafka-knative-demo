@@ -37,15 +37,13 @@ public class MapResource {
     public void onWeatherStation(JsonObject measurement) {
         Measurement temperatureMeasurement = new Measurement();
 
-/*
-        public double max;
-        public double average;
-        public String icon;
-*/
         temperatureMeasurement.stationId = measurement.getInt("stationId");
         temperatureMeasurement.stationName = measurement.getString("stationName");
         temperatureMeasurement.latitude = measurement.getJsonNumber("latitude").doubleValue();
         temperatureMeasurement.longitude = measurement.getJsonNumber("longitude").doubleValue();
+        temperatureMeasurement.min = measurement.getJsonNumber("min").doubleValue();
+        temperatureMeasurement.max = measurement.getJsonNumber("max").doubleValue();
+        temperatureMeasurement.average = measurement.getJsonNumber("avg").doubleValue();
 
         temperatureMeasurement.ts = measurement.getString("ts");
         temperatureMeasurement.value = measurement.getJsonNumber("value").doubleValue();

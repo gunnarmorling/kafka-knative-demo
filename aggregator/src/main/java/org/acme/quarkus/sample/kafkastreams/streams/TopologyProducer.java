@@ -6,6 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.json.Json;
 
+import org.acme.quarkus.sample.kafkastreams.model.Aggregation;
 import org.acme.quarkus.sample.kafkastreams.model.WeatherStation;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
@@ -15,10 +16,14 @@ import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Joined;
 import org.apache.kafka.streams.kstream.KTable;
+import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.state.KeyValueBytesStoreSupplier;
+import org.apache.kafka.streams.state.Stores;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.debezium.serde.DebeziumSerdes;
+import io.quarkus.kafka.client.serialization.JsonbSerde;
 
 @ApplicationScoped
 public class TopologyProducer {
@@ -41,6 +46,9 @@ public class TopologyProducer {
         Serde<WeatherStation> weatherStationSerde = DebeziumSerdes.payloadJson(WeatherStation.class);
         weatherStationSerde.configure(Collections.singletonMap("from.field", "after"), false);
         JsonObjectSerde jsonObjectSerde = new JsonObjectSerde();
+        JsonbSerde<Aggregation> aggregationSerde = new JsonbSerde<>(Aggregation.class);
+        KeyValueBytesStoreSupplier storeSupplier = Stores.persistentKeyValueStore("aggregations-store");
+
 
         KTable<Integer, WeatherStation> stations = builder.table(
                 weatherStationsTopic,
@@ -69,9 +77,18 @@ public class TopologyProducer {
                                 .build(),
                         Joined.with(Serdes.Integer(), jsonObjectSerde, weatherStationSerde)
                 )
+                .groupByKey()
+                .aggregate(
+                        Aggregation::new,
+                        (stationId, value, aggregation) -> aggregation.updateFrom(value),
+                        Materialized.<Integer, Aggregation> as(storeSupplier)
+                                .withKeySerde(Serdes.Integer())
+                                .withValueSerde(aggregationSerde)
+                )
+                .toStream()
                 .to(
                         temperatureValuesEnrichedTopic,
-                        Produced.with(Serdes.Integer(), jsonObjectSerde)
+                        Produced.with(Serdes.Integer(), aggregationSerde)
                 );
 
         return builder.build();
