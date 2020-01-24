@@ -19,7 +19,8 @@ The demo is made up of the following components:
 * _aggregator_, a Quarkus application processing the measurements topic with the master data topic, using the Kafka Streams API
 * _temperature-map_, a Quarkus application that streams the measurement values to a client via WebSockets, where they are visualized on a world map
 
-TODO: Add Knative
+TODO: Add Knative; atm. the _temperature-map_ app reads directly from the Kafka topic with enriched measurement values. Finally, this ought to go via Knative Eventing.
+For that, remove/comment out the `@Incoming` method in `MapResource`.
 
 ## Building
 
