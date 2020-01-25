@@ -15,9 +15,11 @@ public class WeatherStation {
     @JsonProperty("average_temperature")
     public double averageTemperature;
 
+    public boolean active;
+
     @Override
     public String toString() {
         return "WeatherStation [id=" + id + ", name=" + name + ", longitude=" + longitude + ", latitude=" + latitude
-                + ", averageTemperature=" + averageTemperature + "]";
+                + ", averageTemperature=" + averageTemperature + ", active=" + active + "]";
     }
 }

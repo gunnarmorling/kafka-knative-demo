@@ -32,7 +32,7 @@ export DEBEZIUM_VERSION=1.0
 ### Running
 
 ```
-docker-compose -f docker-compose-local.yaml up --build
+docker-compose up --build
 ```
 
 Register Debezium connector for master data:
@@ -71,14 +71,23 @@ docker run --tty --rm \
     -t temperature-values-enriched | jq .
 ```
 
-Getting a shell in the Postgres database:
+Initially, only some weather stations are active.
+Non-active stations are filtered out in the Kafka Streams application.
+To show how master data updates in the RDBMS are propagated via Debezium,
+enable all stations in the database;
+Get a shell in the Postgres database and run this DML:
 
 ```
 docker run --tty --rm -i \
         --network weather-network \
         debezium/tooling:1.0 \
         bash -c 'pgcli postgresql://postgresuser:postgrespw@weather-db:5432/weatherdb'
+
+# In pgcli
+update weather.weatherstations set active=true;
 ```
+
+You'll then see values for all the stations being shown on the map.
 
 ## Running locally
 

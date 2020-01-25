@@ -53,7 +53,8 @@ public class TopologyProducer {
         KTable<Integer, WeatherStation> stations = builder.table(
                 weatherStationsTopic,
                 Consumed.with(weatherStationKeySerde, weatherStationSerde)
-        );
+        )
+        .filter((stationId, station) -> station.active);
 
         builder.stream(temperatureValuesTopic, Consumed.with(Serdes.Integer(), Serdes.String()))
                 .map((Integer stationId, String measurement) -> {
