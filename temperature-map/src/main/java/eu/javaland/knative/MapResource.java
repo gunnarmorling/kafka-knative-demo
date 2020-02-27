@@ -12,10 +12,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 
 @Path("/")
 public class MapResource {
+
+    @ConfigProperty(name = "map.read.from.topic", defaultValue = "false")
+    boolean readFromTopic;
 
     @Inject
     MapEndpoint websocketEndpoint;
@@ -35,6 +39,10 @@ public class MapResource {
 
     @Incoming("temperature-values")
     public void onWeatherStation(JsonObject measurement) {
+        if (!readFromTopic) {
+            return;
+        }
+
         Measurement temperatureMeasurement = new Measurement();
 
         temperatureMeasurement.stationId = measurement.getInt("stationId");

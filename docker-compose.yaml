@@ -91,6 +91,7 @@ services:
       dockerfile: src/main/docker/Dockerfile.${QUARKUS_MODE:-jvm}
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      MAP_READ_FROM_TOPIC: "true"
     networks:
       - my-network
 
