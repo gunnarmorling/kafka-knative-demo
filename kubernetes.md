@@ -2,10 +2,13 @@
 
 ## Database
 
+```shell
 kubectl run --image=quay.io/gunnarmorling/javaland2020-knativedemo-postgres weatherdb --port=5432 --env="POSTGRES_USER=postgresuser" --env="POSTGRES_PASSWORD=postgrespw" --env="POSTGRES_DB=weatherdb"
+```
 
 ## Kafka Connect
 
+```shell
 cat <<EOF | kubectl -n kafka apply -f -
 apiVersion: kafka.strimzi.io/v1beta1
 kind: KafkaConnect
@@ -31,10 +34,12 @@ spec:
     config.providers: file
     config.providers.file.class: org.apache.kafka.common.config.provider.FileConfigProvider
 EOF
+```
 
 ## Connector Instance
 
-cat | kubectl -n kafka apply -f - << 'EOF'
+```shell
+cat <<EOF | kubectl -n kafka apply -f -
 apiVersion: "kafka.strimzi.io/v1alpha1"
 kind: "KafkaConnector"
 metadata:
@@ -58,3 +63,4 @@ spec:
     value.converter : "org.apache.kafka.connect.json.JsonConverter"
     value.converter.schemas.enable : "false"
 EOF
+```
