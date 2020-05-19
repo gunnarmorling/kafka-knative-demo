@@ -1,11 +1,11 @@
-# Quarkus / Kafka Streams / Knative Demo for JavaLand 2020.
+# Debezium / Quarkus / Kafka Streams / Knative Demo
 
-This is the source code of the demo from the JavaLand 2020 talk [Stream Processing with Quarkus, Kafka Streams and Knative](https://programm.javaland.eu/2020/#/scheduledEvent/590798) by Matthias Wessendorf and Gunnar Morling.
+This is the source code of the demo from the DevNation Tech Talk [Serverless stream processing of Debezium data change events with Knative](https://developers.redhat.com/devnation/tech-talks/serverless-stream-debezium/) by Matthias Wessendorf and Gunnar Morling.
 
 It shows:
 
-* Aggregating values and joining multiple Kafka topics via Kafka Streams
 * Capturing changes from an RDBMS and exporting them into a Kafka topic using Debezium
+* Aggregating values and joining multiple Kafka topics via Kafka Streams, running on top of Quarkus
 * Feeding data from Kafka to dynamically scaled consumers via Knative
 * Running a web application with WebSockets on Knative
 
@@ -19,14 +19,13 @@ The demo is made up of the following components:
 * _aggregator_, a Quarkus application processing the measurements topic with the master data topic, using the Kafka Streams API
 * _temperature-map_, a Quarkus application that streams the measurement values to a client via WebSockets, where they are visualized on a world map
 
-TODO: Add Knative; atm. the _temperature-map_ app reads directly from the Kafka topic with enriched measurement values. Finally, this ought to go via Knative Eventing.
-For that, remove/comment out the `@Incoming` method in `MapResource`.
+TODO: Add Knative parts. For this Docker Compose based set-up the _temperature-map_ app reads directly from the Kafka topic with enriched measurement values. In the actual demo this is done via Knative Eventing.
 
 ## Building
 
 ```
 mvn clean package
-export DEBEZIUM_VERSION=1.0
+export DEBEZIUM_VERSION=1.1
 ```
 
 ### Running
@@ -46,7 +45,7 @@ Browse change data topic with weather stations:
 ```
 docker run --tty --rm \
     --network weather-network \
-    debezium/tooling:1.0 \
+    debezium/tooling:1.1 \
     kafkacat -b kafka:9092 -C -o beginning -q \
     -t dbserver1.weather.weatherstations | jq .
 ```
@@ -56,7 +55,7 @@ Browse sensor data topic:
 ```
 docker run --tty --rm \
     --network weather-network \
-    debezium/tooling:1.0 \
+    debezium/tooling:1.1 \
     kafkacat -b kafka:9092 -C -o beginning -q \
     -t temperature-values
 ```
@@ -66,7 +65,7 @@ Browse enriched sensor data topic:
 ```
 docker run --tty --rm \
     --network weather-network \
-    debezium/tooling:1.0 \
+    debezium/tooling:1.1 \
     kafkacat -b kafka:9092 -C -o beginning -q \
     -t temperature-values-enriched | jq .
 ```
@@ -80,7 +79,7 @@ Get a shell in the Postgres database and run this DML:
 ```
 docker run --tty --rm -i \
         --network weather-network \
-        debezium/tooling:1.0 \
+        debezium/tooling:1.1 \
         bash -c 'pgcli postgresql://postgresuser:postgrespw@weather-db:5432/weatherdb'
 
 # In pgcli
