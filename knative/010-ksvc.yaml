@@ -1,0 +1,9 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: enriched-display
+spec:
+  template:
+    spec:
+      containers:
+      - image: gcr.io/knative-nightly/knative.dev/eventing-contrib/cmd/event_display@sha256:94f1620b8780f6114ebdd3da9ea6510eb6324cf9b1b07306d3ffaf7b3bb07e75
