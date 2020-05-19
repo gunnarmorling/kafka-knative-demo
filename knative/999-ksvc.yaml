@@ -1,0 +1,14 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: map-display
+spec:
+  template:
+    spec:
+      containers:
+      - image: docker.io/gunnarmorling/debezium-knative-demo-temperature-map
+        env:
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "my-cluster-kafka-bootstrap.kafka:9092"     
+        - name: MAP_READ_FROM_TOPIC
+          value: "true"     
