@@ -2,8 +2,29 @@
 
 ## Database
 
+Run the database:
+
 ```shell
 kubectl run --image=quay.io/gunnarmorling/javaland2020-knativedemo-postgres weatherdb --port=5432 --env="POSTGRES_USER=postgresuser" --env="POSTGRES_PASSWORD=postgrespw" --env="POSTGRES_DB=weatherdb"
+```
+
+Expose it as service:
+
+```shell
+cat <<EOF | kubectl -n default apply -f -
+apiVersion: v1
+kind: Service
+metadata:
+  name: weatherdb
+  labels:
+    run: weatherdb
+spec:
+  type: NodePort
+  ports:
+   - port: 5432
+  selector:
+   run: weatherdb
+EOF
 ```
 
 ## Kafka Connect
@@ -22,7 +43,7 @@ metadata:
 spec:
   image: quay.io/gunnarmorling/javaland2020-knativedemo-kafkaconnect-debezium
   replicas: 1
-  bootstrapServers: my-cluster-kafka-bootstrap:9093
+  bootstrapServers: my-cluster-kafka-bootstrap.kafka:9093
   tls:
     trustedCertificates:
       - secretName: my-cluster-cluster-ca-cert
@@ -47,10 +68,10 @@ metadata:
   labels:
     strimzi.io/cluster: my-connect-cluster
 spec:
-  class: io.debezium.connector.postgres.PostgresConnector
+  class: io.debezium.connector.postgresql.PostgresConnector
   tasksMax: 1
   config:
-    database.hostname: weatherdb-5d86678fc8-9sfvx
+    database.hostname: weatherdb.default.svc
     database.port: "5432"
     database.user: "postgresuser"
     database.password: "postgrespw"
@@ -64,3 +85,18 @@ spec:
     value.converter.schemas.enable : "false"
 EOF
 ```
+
+## The Apps
+
+### Aggregator
+
+```shell
+kubectl run --image=docker.io/gunnarmorling/debezium-knative-demo-aggregator aggregator --env="QUARKUS_KAFKA_STREAMS_BOOTSTRAP_SERVERS=my-cluster-kafka-bootstrap.kafka:9092"
+```
+
+### Sensors
+
+```shell
+kubectl run --image=docker.io/gunnarmorling/debezium-knative-demo-sensors sensors --env="KAFKA_BOOTSTRAP_SERVERS=my-cluster-kafka-bootstrap.kafka:9092"
+```
+
