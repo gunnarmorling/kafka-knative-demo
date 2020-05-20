@@ -6,7 +6,7 @@ Run the database:
 
 ```shell
 # (To run container as root on OpenShift)
-oc adm policy add-scc-to-user anyuid system:serviceaccount:gunnar-test:default
+oc adm policy add-scc-to-user anyuid system:serviceaccount:kafka:default
 
 kubectl run --image=quay.io/gunnarmorling/javaland2020-knativedemo-postgres \
     weatherdb \
@@ -19,7 +19,7 @@ kubectl run --image=quay.io/gunnarmorling/javaland2020-knativedemo-postgres \
 Expose it as service:
 
 ```shell
-cat <<EOF | kubectl -n gunnar-test apply -f -
+cat <<EOF | kubectl -n kafka apply -f -
 apiVersion: v1
 kind: Service
 metadata:
@@ -39,22 +39,22 @@ EOF
 
 ```shell
 curl -L https://github.com/strimzi/strimzi-kafka-operator/releases/download/0.16.1/strimzi-cluster-operator-0.16.1.yaml \
-  | sed 's/namespace: .*/namespace: gunnar-test/' \
-  | kubectl apply -f - -n gunnar-test
+  | sed 's/namespace: .*/namespace: kafka/' \
+  | kubectl apply -f - -n kafka
 ```
 
 ## Apache Kafka
 
 ```shell
-kubectl -n gunnar-test \
+kubectl -n kafka \
     apply -f https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/0.16.1/examples/kafka/kafka-persistent-single.yaml \
-  && kubectl wait kafka/my-cluster --for=condition=Ready --timeout=300s -n gunnar-test
+  && kubectl wait kafka/my-cluster --for=condition=Ready --timeout=300s -n kafka
 ```
 
 ## Kafka Connect
 
 ```shell
-cat <<EOF | kubectl -n gunnar-test apply -f -
+cat <<EOF | kubectl -n kafka apply -f -
 apiVersion: kafka.strimzi.io/v1beta1
 kind: KafkaConnect
 metadata:
@@ -82,7 +82,7 @@ EOF
 ## The Sensors App
 
 ```shell
-kubectl run --image=docker.io/gunnarmorling/debezium-knative-demo-sensors sensors --env="KAFKA_BOOTSTRAP_SERVERS=my-cluster-kafka-bootstrap.gunnar-test:9092"
+kubectl run --image=docker.io/gunnarmorling/debezium-knative-demo-sensors sensors --env="KAFKA_BOOTSTRAP_SERVERS=my-cluster-kafka-bootstrap.kafka:9092"
 ```
 
 # Demo
@@ -110,7 +110,7 @@ weatherdb> select * from weather.weatherstations;
 Registering a Debezium connector:
 
 ```shell
-cat <<EOF | kubectl -n gunnar-test apply -f -
+cat <<EOF | kubectl -n kafka apply -f -
 apiVersion: "kafka.strimzi.io/v1alpha1"
 kind: "KafkaConnector"
 metadata:
@@ -121,7 +121,7 @@ spec:
   class: io.debezium.connector.postgresql.PostgresConnector
   tasksMax: 1
   config:
-    database.hostname: weatherdb.gunnar-test.svc
+    database.hostname: weatherdb.kafka.svc
     database.port: "5432"
     database.user: "postgresuser"
     database.password: "postgrespw"
@@ -175,7 +175,7 @@ kubectl run --image=docker.io/gunnarmorling/debezium-knative-demo-temperature-ma
 ```
 
 ```shell
-cat <<EOF | kubectl -n gunnar-test apply -f -
+cat <<EOF | kubectl -n kafka apply -f -
 apiVersion: v1
 kind: Service
 metadata:

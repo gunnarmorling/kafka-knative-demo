@@ -19,6 +19,8 @@ The demo is made up of the following components:
 * _aggregator_, a Quarkus application processing the measurements topic with the master data topic, using the Kafka Streams API
 * _temperature-map_, a Quarkus application that streams the measurement values to a client via WebSockets, where they are visualized on a world map
 
+![Temperature Map](temperature-map.png)
+
 TODO: Add Knative parts. For this Docker Compose based set-up the _temperature-map_ app reads directly from the Kafka topic with enriched measurement values. In the actual demo this is done via Knative Eventing.
 
 ## Building
