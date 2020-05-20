@@ -1,38 +1,8 @@
 # Kubernetes Set-up
 
-## Database
-
-Run the database:
-
 ```shell
-# (To run container as root on OpenShift)
-oc adm policy add-scc-to-user anyuid system:serviceaccount:kafka:default
-
-kubectl run --image=quay.io/gunnarmorling/javaland2020-knativedemo-postgres \
-    weatherdb \
-    --port=5432 \
-    --env="POSTGRES_USER=postgresuser" \
-    --env="POSTGRES_PASSWORD=postgrespw" \
-    --env="POSTGRES_DB=weatherdb"
-```
-
-Expose it as service:
-
-```shell
-cat <<EOF | kubectl -n kafka apply -f -
-apiVersion: v1
-kind: Service
-metadata:
-  name: weatherdb
-  labels:
-    run: weatherdb
-spec:
-  type: NodePort
-  ports:
-   - port: 5432
-  selector:
-   run: weatherdb
-EOF
+kubectl create namespace kafka
+kubectl create namespace debezium-knative-demo
 ```
 
 ## Strimzi Cluster Operator
@@ -79,6 +49,41 @@ spec:
 EOF
 ```
 
+## Database
+
+Run the database:
+
+```shell
+# (To run container as root on OpenShift)
+oc adm policy add-scc-to-user anyuid system:serviceaccount:debezium-knative-demo:default
+
+kubectl -n debezium-knative-demo run --image=quay.io/gunnarmorling/javaland2020-knativedemo-postgres \
+    weatherdb \
+    --port=5432 \
+    --env="POSTGRES_USER=postgresuser" \
+    --env="POSTGRES_PASSWORD=postgrespw" \
+    --env="POSTGRES_DB=weatherdb"
+```
+
+Expose it as service:
+
+```shell
+cat <<EOF | kubectl -n debezium-knative-demo apply -f -
+apiVersion: v1
+kind: Service
+metadata:
+  name: weatherdb
+  labels:
+    run: weatherdb
+spec:
+  type: NodePort
+  ports:
+   - port: 5432
+  selector:
+   run: weatherdb
+EOF
+```
+
 ## The Sensors App
 
 ```shell
@@ -121,7 +126,7 @@ spec:
   class: io.debezium.connector.postgresql.PostgresConnector
   tasksMax: 1
   config:
-    database.hostname: weatherdb.kafka.svc
+    database.hostname: weatherdb.debezium-knative-demo.svc
     database.port: "5432"
     database.user: "postgresuser"
     database.password: "postgrespw"
@@ -139,7 +144,7 @@ EOF
 Examining weather station topic:
 
 ```shell
-kafkacat -b my-cluster-kafka-bootstrap:9092 -C -o beginning -q -u -t dbserver1.weather.weatherstations | jq .
+kafkacat -b my-cluster-kafka-bootstrap.kafka:9092 -C -o beginning -q -u -t dbserver1.weather.weatherstations | jq .
 ```
 
 Run aggregator app:
@@ -151,7 +156,7 @@ kubectl run --image=docker.io/gunnarmorling/debezium-knative-demo-aggregator agg
 Examining enriched topic:
 
 ```shell
-kafkacat -b my-cluster-kafka-bootstrap:9092 -C -o end -q -u -t temperature-values-enriched | jq .
+kafkacat -b my-cluster-kafka-bootstrap.kafka:9092 -C -o end -q -u -t temperature-values-enriched | jq .
 ```
 
 Enabling more weather stations:
