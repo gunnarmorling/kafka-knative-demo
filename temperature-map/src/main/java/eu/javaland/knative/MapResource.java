@@ -27,7 +27,7 @@ public class MapResource {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response hello() {
-        return Response.status(301).location(URI.create("/ui")).build();
+        return Response.status(301).location(URI.create("/ui/map.html")).build();
     }
 
     @POST
@@ -38,7 +38,7 @@ public class MapResource {
     }
 
     @Incoming("temperature-values")
-    public void onWeatherStation(JsonObject measurement) {
+    public void onMeasurement(JsonObject measurement) {
         if (!readFromTopic) {
             return;
         }
