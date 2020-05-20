@@ -5,7 +5,12 @@
 Run the database:
 
 ```shell
-kubectl run --image=quay.io/gunnarmorling/javaland2020-knativedemo-postgres weatherdb --port=5432 --env="POSTGRES_USER=postgresuser" --env="POSTGRES_PASSWORD=postgrespw" --env="POSTGRES_DB=weatherdb"
+kubectl run --image=quay.io/gunnarmorling/javaland2020-knativedemo-postgres \
+    weatherdb \
+    --port=5432 \
+    --env="POSTGRES_USER=postgresuser" \
+    --env="POSTGRES_PASSWORD=postgrespw" \
+    --env="POSTGRES_DB=weatherdb"
 ```
 
 Expose it as service:
