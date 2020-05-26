@@ -117,30 +117,7 @@ weatherdb> select * from weather.weatherstations;
 Registering a Debezium connector:
 
 ```shell
-cat <<EOF | kubectl -n kafka apply -f -
-apiVersion: "kafka.strimzi.io/v1alpha1"
-kind: "KafkaConnector"
-metadata:
-  name: "inventory-connector"
-  labels:
-    strimzi.io/cluster: my-connect-cluster
-spec:
-  class: io.debezium.connector.postgresql.PostgresConnector
-  tasksMax: 1
-  config:
-    database.hostname: weatherdb.debezium-knative-demo.svc
-    database.port: "5432"
-    database.user: "postgresuser"
-    database.password: "postgrespw"
-    database.server.name: "dbserver1"
-    database.dbname : "weatherdb"
-    schema.whitelist : "weather"
-    decimal.handling.mode : "double"
-    key.converter : "org.apache.kafka.connect.json.JsonConverter"
-    key.converter.schemas.enable : "false"
-    value.converter : "org.apache.kafka.connect.json.JsonConverter"
-    value.converter.schemas.enable : "false"
-EOF
+kubectl -n kafka apply -f debezium/030-connector.yaml
 ```
 
 Examining weather station topic:

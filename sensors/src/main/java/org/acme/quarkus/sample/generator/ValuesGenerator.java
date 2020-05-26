@@ -31,6 +31,7 @@ public class ValuesGenerator {
     private Random random = new Random();
 
     public ValuesGenerator() {
+        // align with init.sql when doing changes
         stations.put(1, new WeatherStation(1, "Hamburg", 13));
         stations.put(2, new WeatherStation(2, "Snowdonia", 5));
         stations.put(3, new WeatherStation(3, "Boston", 11));
