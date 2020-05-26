@@ -9,9 +9,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.json.JsonObject;
 
-import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +30,23 @@ public class ValuesGenerator {
     private Map<Integer, WeatherStation> stations = new HashMap<>();
     private Random random = new Random();
 
+    public ValuesGenerator() {
+        stations.put(1, new WeatherStation(1, "Hamburg", 13));
+        stations.put(2, new WeatherStation(2, "Snowdonia", 5));
+        stations.put(3, new WeatherStation(3, "Boston", 11));
+        stations.put(4, new WeatherStation(4, "Tokio", 16));
+        stations.put(5, new WeatherStation(5, "Cusco", 12));
+        stations.put(6, new WeatherStation(6, "Svalbard", -7));
+        stations.put(7, new WeatherStation(7, "Porthsmouth", 11));
+        stations.put(8, new WeatherStation(8, "Oslo", 7));
+        stations.put(9, new WeatherStation(9, "Marrakesh", 20));
+        stations.put(10, new WeatherStation(10, "Johannesburg", 25));
+        stations.put(11, new WeatherStation(11, "Anchorage", -2));
+        stations.put(12, new WeatherStation(12, "San Francisco", 15));
+        stations.put(13, new WeatherStation(13, "Canberra", 25));
+        stations.put(14, new WeatherStation(14, "Novosibirsk", 10));
+    }
+
     @Outgoing("temperature-values")
     public Flowable<KafkaMessage<Integer, String>> generate() {
 
@@ -49,26 +64,5 @@ public class ValuesGenerator {
                     LOG.info("station: {}, temperature: {}", station.name, temperature);
                     return KafkaMessage.of(station.id, Instant.now() + ";" + temperature);
                 });
-    }
-
-    /**
-     * Retrieving weather station master data via CDC. This defeats a bit the
-     * purpose of showing how to join the two topics via Kafka Streams in the
-     * aggregator, but it's done here so to obtain the existing weather station ids
-     * and their average temperature, as it's needed as the basis for the "sensor
-     * measurements".
-     */
-    @Incoming("weather-stations")
-    public void onWeatherStation(JsonObject station) {
-        JsonObject after = station.getJsonObject("after");
-
-        WeatherStation weatherStation = new WeatherStation(
-                after.getInt("id"),
-                after.getString("name"),
-                after.getJsonNumber("average_temperature").doubleValue()
-        );
-        System.out.println("Received weather station: " + weatherStation);
-
-        stations.put(weatherStation.id, weatherStation);
     }
 }
