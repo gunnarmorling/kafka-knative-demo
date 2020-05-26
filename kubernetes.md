@@ -3,6 +3,7 @@
 ```shell
 kubectl create namespace kafka
 kubectl create namespace debezium-knative-demo
+oc project debezium-knative-demo
 ```
 
 ## Strimzi Cluster Operator
@@ -159,7 +160,7 @@ kubectl run --image=docker.io/gunnarmorling/debezium-knative-demo-temperature-ma
 ```
 
 ```shell
-cat <<EOF | kubectl -n kafka apply -f -
+cat <<EOF | kubectl -n debezium-knative-demo apply -f -
 apiVersion: v1
 kind: Service
 metadata:
