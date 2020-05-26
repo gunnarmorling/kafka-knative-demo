@@ -101,7 +101,9 @@ kubectl run tooling -it --image=debezium/tooling --restart=Never
 Examining temperature value topic:
 
 ```shell
-kafkacat -b my-cluster-kafka-bootstrap.kafka:9092 -C -o end -q -u -t temperature-values
+kafkacat -b my-cluster-kafka-bootstrap.kafka:9092 -C -o end -q -u \
+    -t temperature-values \
+    -f 'key: %k, value: %s\n' -s key='i$'
 ```
 
 Selecting existing weather stations:
