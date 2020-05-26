@@ -107,7 +107,7 @@ kafkacat -b my-cluster-kafka-bootstrap.kafka:9092 -C -o end -q -u -t temperature
 Selecting existing weather stations:
 
 ```shell
-[root@tooling /] pgcli postgresql://postgresuser:postgrespw@weatherdb:5432/weatherdb
+[root@tooling /] pgcli postgresql://postgresuser:postgrespw@weatherdb.debezium-knative-demo.svc:5432/weatherdb
 
 weatherdb> select * from weather.weatherstations;
 ```
