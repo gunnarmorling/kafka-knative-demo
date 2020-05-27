@@ -10,7 +10,7 @@ metadata:
 spec:
   image: quay.io/gunnarmorling/javaland2020-knativedemo-kafkaconnect-debezium
   replicas: 1
-  bootstrapServers: my-cluster-kafka-bootstrap:9093
+  bootstrapServers: my-cluster-kafka-bootstrap.kafka:9093
   tls:
     trustedCertificates:
       - secretName: my-cluster-cluster-ca-cert
