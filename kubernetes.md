@@ -121,10 +121,16 @@ Registering a Debezium connector:
 kubectl -n kafka apply -f debezium/030-connector.yaml
 ```
 
+Getting its status:
+
+```shell
+[root@tooling /] kubectl get kafkaconnector inventory-connector -n kafka -o json | jq .
+```
+
 Examining weather station topic:
 
 ```shell
-kafkacat -b my-cluster-kafka-bootstrap.kafka:9092 -C -o beginning -q -u -t dbserver1.weather.weatherstations | jq .
+[root@tooling /] kafkacat -b my-cluster-kafka-bootstrap.kafka:9092 -C -o beginning -q -u -t dbserver1.weather.weatherstations | jq .
 ```
 
 Run aggregator app:
@@ -136,7 +142,7 @@ kubectl run --image=docker.io/gunnarmorling/debezium-knative-demo-aggregator agg
 Examining enriched topic:
 
 ```shell
-kafkacat -b my-cluster-kafka-bootstrap.kafka:9092 -C -o end -q -u -t temperature-values-enriched | jq .
+[root@tooling /] kafkacat -b my-cluster-kafka-bootstrap.kafka:9092 -C -o end -q -u -t temperature-values-enriched | jq .
 ```
 
 Enabling more weather stations:
