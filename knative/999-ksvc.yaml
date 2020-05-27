@@ -2,6 +2,7 @@ apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
   name: map-display
+  namespace: debezium-knative-demo
 spec:
   template:
     spec:

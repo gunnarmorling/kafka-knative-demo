@@ -2,6 +2,7 @@ apiVersion: sources.knative.dev/v1alpha1
 kind: KafkaSource
 metadata:
   name: kafka-source-enriched
+  namespace: debezium-knative-demo
   labels:
     kafkasources.sources.knative.dev/key-type: int
 spec:
