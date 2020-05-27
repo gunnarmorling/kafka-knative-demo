@@ -1,17 +1,8 @@
 ####
-# This Dockerfile is used in order to build a container that runs the Quarkus application in native (no JVM) mode
 #
-# Before building the docker image run:
+# Build the image with:
 #
-# mvn package -Pnative -Dquarkus.native.container-build=true
-#
-# Then, build the image with:
-#
-# docker build -f src/main/docker/Dockerfile.native -t quarkus/kafka-knative-demo .
-#
-# Then run the container using:
-#
-# docker run -i --rm -p 8080:8080 quarkus/kafka-knative-demo
+# docker build -f Dockerfile -t quay.io/gunnarmorling/javaland2020-knativedemo-postgres .
 #
 ###
 FROM debezium/example-postgres:1.0

@@ -1,9 +1,13 @@
 package eu.javaland.knative;
 
+import java.io.StringReader;
 import java.net.URI;
 
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.json.Json;
 import javax.json.JsonObject;
+import javax.json.JsonReader;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -12,14 +16,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.reactive.messaging.Incoming;
+import io.quarkus.runtime.StartupEvent;
 
 @Path("/")
 public class MapResource {
-
-    @ConfigProperty(name = "map.read.from.topic", defaultValue = "false")
-    boolean readFromTopic;
 
     @Inject
     MapEndpoint websocketEndpoint;
@@ -30,19 +30,14 @@ public class MapResource {
         return Response.status(301).location(URI.create("/ui/map.html")).build();
     }
 
+    // TODO manually parsing the payload for now, as JAX-RS didn't seem to like the CE media type
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response newMeasurement(Measurement measurement) {
-        websocketEndpoint.onMeasurement(measurement);
-        return Response.ok().build();
-    }
+    @Consumes(MediaType.WILDCARD)
+    public Response newMeasurement(String request) {
+        System.out.println("Received measurement via HTTP: " + request);
 
-    @Incoming("temperature-values")
-    public void onMeasurement(JsonObject measurement) {
-        if (!readFromTopic) {
-            return;
-        }
-
+        JsonReader reader = Json.createReader(new StringReader(request));
+        JsonObject measurement = reader.readObject();
         Measurement temperatureMeasurement = new Measurement();
 
         temperatureMeasurement.stationId = measurement.getInt("stationId");
@@ -58,5 +53,11 @@ public class MapResource {
         temperatureMeasurement.icon = measurement.getString("icon");
 
         websocketEndpoint.onMeasurement(temperatureMeasurement);
+
+        return Response.ok().build();
+    }
+
+    public void onStartup(@Observes StartupEvent se) {
+        System.out.println("### Starting up ###");
     }
 }
