@@ -120,6 +120,12 @@ Run aggregator app:
 kubectl run --image=docker.io/gunnarmorling/debezium-knative-demo-aggregator aggregator --env="QUARKUS_KAFKA_STREAMS_BOOTSTRAP_SERVERS=my-cluster-kafka-bootstrap.kafka:9092"
 ```
 
+Fallback to another topic:
+
+```shell
+kubectl run --image=docker.io/gunnarmorling/debezium-knative-demo-aggregator aggregator --env="QUARKUS_KAFKA_STREAMS_BOOTSTRAP_SERVERS=my-cluster-kafka-bootstrap.kafka:9092" --env="WEATHER_STATIONS_TOPIC=dbserver2.weather.weatherstations"
+```
+
 Examining enriched topic:
 
 ```shell
