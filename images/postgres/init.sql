@@ -11,6 +11,8 @@ CREATE TABLE weatherstations (
   active boolean NOT NULL
 );
 
+ALTER TABLE weatherstations REPLICA IDENTITY FULL;
+
 -- align with ValueGenerator when doing changes
 INSERT INTO weatherstations (name, average_temperature, longitude, latitude, active) VALUES('Hamburg', 13, 10.0, 53.6, true);
 INSERT INTO weatherstations (name, average_temperature, longitude, latitude, active) VALUES('Snowdonia', 5, -3.9, 52.9, true);
