@@ -36,7 +36,7 @@ Run the database:
 # (To run container as root on OpenShift)
 oc adm policy add-scc-to-user anyuid system:serviceaccount:debezium-knative-demo:default
 
-kubectl -n debezium-knative-demo run --image=quay.io/gunnarmorling/javaland2020-knativedemo-postgres \
+kubectl -n debezium-knative-demo run --image=docker.io/gunnarmorling/javaland2020-knativedemo-postgres \
     weatherdb \
     --port=5432 \
     --env="POSTGRES_USER=postgresuser" \
