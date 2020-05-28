@@ -5,9 +5,9 @@ metadata:
   namespace: debezium-knative-demo
 spec:
   broker: default
-  # filter:
-  #   attributes:
-  #     type: dev.knative.kafka.event
+  filter:
+    attributes:
+      type: dev.knative.kafka.event
   #     key: "7"
   subscriber:
     ref:
