@@ -69,6 +69,10 @@ EOF
 kubectl run --image=docker.io/gunnarmorling/debezium-knative-demo-sensors sensors --env="KAFKA_BOOTSTRAP_SERVERS=my-cluster-kafka-bootstrap.kafka:9092"
 ```
 
+## Knative installation
+
+To install Knative on Openshift, follow the instructions for the [Openshift Serverless product](https://docs.openshift.com/container-platform/4.4/serverless/installing_serverless/installing-openshift-serverless.html)
+
 # Demo
 
 Start a tooling pod:
@@ -132,6 +136,33 @@ Stop tooling pod:
 
 ```shell
 kubectl delete pod tooling
+```
+
+## Knative application
+
+Create the default Knative broker:
+
+```shell
+kubectl label namespace debezium-knative-demo knative-eventing-injection=enabled
+```
+
+Start the `KafkaSource`:
+
+```shell
+kubectl apply -f 010-kafka-source-enriched.yml
+```
+
+
+Run the maps app:
+
+```shell
+kubectl apply -f 020-ksvc.yaml
+```
+
+Create the Trigger to send messages to the maps app:
+
+```shell
+kubectl apply -f 030-trigger.yaml
 ```
 
 # Optional: Running maps app without Knative
