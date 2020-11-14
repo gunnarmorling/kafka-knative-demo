@@ -18,8 +18,14 @@ import javax.ws.rs.core.Response;
 
 import io.quarkus.runtime.StartupEvent;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.reactive.messaging.Incoming;
+
 @Path("/")
 public class MapResource {
+
+    @ConfigProperty(name = "map.read.from.topic", defaultValue = "false")
+    boolean readFromTopic;
 
     @Inject
     MapEndpoint websocketEndpoint;
@@ -38,6 +44,22 @@ public class MapResource {
 
         JsonReader reader = Json.createReader(new StringReader(request));
         JsonObject measurement = reader.readObject();
+
+        websocketEndpoint.onMeasurement(initializeMeasurementFromJson(measurement));
+
+        return Response.ok().build();
+    }
+
+    @Incoming("temperature-values")
+    public void onMeasurement(JsonObject measurement) {
+        if (!readFromTopic) {
+            return;
+        }
+
+        websocketEndpoint.onMeasurement(initializeMeasurementFromJson(measurement));
+    }
+
+    private Measurement initializeMeasurementFromJson(JsonObject measurement) {
         Measurement temperatureMeasurement = new Measurement();
 
         temperatureMeasurement.stationId = measurement.getInt("stationId");
@@ -51,10 +73,7 @@ public class MapResource {
         temperatureMeasurement.ts = measurement.getString("ts");
         temperatureMeasurement.value = measurement.getJsonNumber("value").doubleValue();
         temperatureMeasurement.icon = measurement.getString("icon");
-
-        websocketEndpoint.onMeasurement(temperatureMeasurement);
-
-        return Response.ok().build();
+        return temperatureMeasurement;
     }
 
     public void onStartup(@Observes StartupEvent se) {
